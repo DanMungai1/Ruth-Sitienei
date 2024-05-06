@@ -1,0 +1,20 @@
+---
+title: "SCM - IF"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(readxl)
+library(tidyverse)
+SCM_IF <- read_excel("data/SCM-IF.xlsx") |> 
+  pivot_longer(cols = obs:sim, names_to = "Model", values_to = "Water")
+
+SW <- SCM_IF |> filter(Component != "ST")
+```
+
+```{r}
+
+```

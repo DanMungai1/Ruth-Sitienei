@@ -1,0 +1,39 @@
+---
+title: "Soil Temperature"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+execute: 
+  echo: false
+  warning: false
+---
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(ggthemes)
+SoilTemp <- read_excel("data/SoilTemp.xlsx") |> 
+  pivot_longer(cols = Obs:DNDC, names_to = "Model", values_to = "Temp")
+
+Truro <- SoilTemp |> filter(Site != "Montreal")
+
+Montreal <- SoilTemp |> filter(Site == "Montreal")
+```
+
+# Montreal
+```{r}
+ggplot() +
+  geom_line(data = Montreal |> filter(Model == "DNDC"), mapping = aes(Date, Temp), geom = "line", col = "red") +
+  geom_point(data = Montreal |> filter(Model == "Obs"), mapping = aes(Date, Temp), geom = "point") +
+  facet_wrap(~Year, scales = "free") + theme_base()
+```
+
+# Truro
+```{r}
+ggplot() +
+  geom_line(data = Truro |> filter(Model == "DNDC"), mapping = aes(Date, Temp), geom = "line", col = "red") +
+  geom_point(data = Truro |> filter(Model == "Obs"), mapping = aes(Date, Temp), geom = "point") +
+  facet_wrap(~Year, scales = "free") +
+  theme_base()
+```
