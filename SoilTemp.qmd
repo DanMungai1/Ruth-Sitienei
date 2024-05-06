@@ -14,7 +14,7 @@ library(readxl)
 library(tidyverse)
 library(ggthemes)
 SoilTemp <- read_excel("data/SoilTemp.xlsx") |> 
-  pivot_longer(cols = Obs:DNDC, names_to = "Model", values_to = "Temp")
+  mutate(Year = year(Date))
 
 Truro <- SoilTemp |> filter(Site != "Montreal")
 
@@ -22,18 +22,20 @@ Montreal <- SoilTemp |> filter(Site == "Montreal")
 ```
 
 # Montreal
+
 ```{r}
 ggplot() +
-  geom_line(data = Montreal |> filter(Model == "DNDC"), mapping = aes(Date, Temp), geom = "line", col = "red") +
-  geom_point(data = Montreal |> filter(Model == "Obs"), mapping = aes(Date, Temp), geom = "point") +
+  stat_summary(data = Montreal |> filter(Model == "DNDC"), mapping = aes(Date, temp), geom = "line", col = "red") +
+  stat_summary(data = Montreal |> filter(Model == "Obs"), mapping = aes(Date, temp), geom = "point") +
   facet_wrap(~Year, scales = "free") + theme_base()
 ```
 
 # Truro
+
 ```{r}
 ggplot() +
-  geom_line(data = Truro |> filter(Model == "DNDC"), mapping = aes(Date, Temp), geom = "line", col = "red") +
-  geom_point(data = Truro |> filter(Model == "Obs"), mapping = aes(Date, Temp), geom = "point") +
+  stat_summary(data = Truro |> filter(Model == "DNDC"), mapping = aes(Date, temp), geom = "line", col = "red") +
+  stat_summary(data = Truro |> filter(Model == "Obs"), mapping = aes(Date, temp), geom = "point") +
   facet_wrap(~Year, scales = "free") +
   theme_base()
 ```
