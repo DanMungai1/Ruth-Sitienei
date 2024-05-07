@@ -4,17 +4,107 @@ format: html
 editor: visual
 editor_options: 
   chunk_output_type: console
+execute: 
+  echo: false
+  warning: false
 ---
+## Water Content
 
 ```{r}
 library(readxl)
 library(tidyverse)
-SCM_IF <- read_excel("data/SCM-IF.xlsx") |> 
-  pivot_longer(cols = obs:sim, names_to = "Model", values_to = "Water")
+library(ggthemes)
+library(patchwork)
+library(grid)
+library(gridExtra)
 
-SW <- SCM_IF |> filter(Component != "ST")
+windowsFonts(times = windowsFont("times new roman"))
+
+SWC <- read_excel("data/Harrow SWC.xlsx") |> 
+  pivot_longer(cols = obs:sim, names_to = "Model", values_to = "Water") |> 
+  mutate(Year = year(date))
+
+SCM_2012 <- SWC |> filter(component == "SCM", Year == 2012) |> 
+  mutate(date = as.Date(date))
+SCM_2013 <- SWC |> filter(component == "SCM", Year == 2013)|> 
+  mutate(date = as.Date(date))
+SCM_2014 <- SWC |> filter(component == "SCM", Year == 2014)|> 
+  mutate(date = as.Date(date))
+SCM_2015 <- SWC |> filter(component == "SCM", Year == 2015)|> 
+  mutate(date = as.Date(date))
+
+IF_2012 <- SWC |> filter(component != "SCM", Year == 2012)|> 
+  mutate(date = as.Date(date))
+IF_2013 <- SWC |> filter(component != "SCM", Year == 2013)|> 
+  mutate(date = as.Date(date))
+IF_2014 <- SWC |> filter(component != "SCM", Year == 2014)|> 
+  mutate(date = as.Date(date))
+IF_2015 <- SWC |> filter(component != "SCM", Year == 2015)|> 
+  mutate(date = as.Date(date))
 ```
 
 ```{r}
+Harrow_plt <- function(Data) {
+  ggplot()+
+  geom_line(data = Data |> filter(Model == "sim"), mapping = aes(date, Water, col = "sim")) +
+  geom_point(data = Data |> filter(Model == "obs"), mapping = aes(date, Water, col = "obs")) +
+  scale_color_manual(breaks=c('sim', 'obs'),
+                     values=c('sim'='red4', 'obs'='blue4')) +
+  scale_x_date(date_breaks = "4 week", date_labels = "%b")+
+  scale_y_continuous(limits = c(0.1, 0.4))+
+  theme_base(base_family = "times")
+}
+
+hp1 <- Harrow_plt(SCM_2012) +
+  labs(x = NULL, y = "SCM", col = NULL)
+
+hp2 <- Harrow_plt(SCM_2013) +
+  labs(x = NULL, y = NULL, col = NULL)
+
+hp3 <- Harrow_plt(SCM_2014) +
+  labs(x = NULL, y = NULL, col = NULL)
+
+hp4 <- Harrow_plt(SCM_2015) +
+  labs(x = NULL, y = NULL, col = NULL)
+
 
 ```
+
+## IF
+```{r}
+hp01 <- Harrow_plt(IF_2012) +
+  labs(x = 2012, y = "IF", col = NULL)
+
+hp02 <- Harrow_plt(IF_2013) +
+  labs(x = 2013, y = NULL, col = NULL)
+
+hp03 <- Harrow_plt(IF_2014) +
+  labs(x = 2014, y = NULL, col = NULL)
+
+hp04 <- Harrow_plt(IF_2015) +
+  labs(x = 2015, y = NULL, col = NULL)
+
+```
+
+## Combined
+```{r}
+y_grob = textGrob("Soil Water Content (cm3/cm3)",
+                  gp=gpar(fontface="bold", fontsize=15, family = "times"), rot=90)
+
+grid.arrange(patchworkGrob(((hp1|hp2|hp3|hp4)/(hp01|hp02|hp03|hp04) + 
+  plot_layout(heights = c(1,1), guides = "collect")) & theme(plot.background = element_blank(),
+                                                             legend.position = "top")),
+  left = y_grob)
+```
+
+# Temperature 
+```{r}
+STC <- read_excel("data/Harrow STC.xlsx") |> 
+  pivot_longer(cols = -1, names_to = "Model", values_to = "temp")
+
+
+ggplot() +
+  geom_line(data = STC |> filter(Model == "dndc"), mapping = aes(date, temp)) +
+  geom_point(data = STC |> filter(Model != "dndc"), mapping = aes(date, temp))
+```
+
