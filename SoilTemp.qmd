@@ -13,29 +13,90 @@ execute:
 library(readxl)
 library(tidyverse)
 library(ggthemes)
+library(patchwork)
+library(gridExtra)
+library(grid)
+
+windowsFonts(times = windowsFont("times new roman"))
 SoilTemp <- read_excel("data/SoilTemp.xlsx") |> 
   mutate(Year = year(Date))
 
-Truro <- SoilTemp |> filter(Site != "Montreal")
+Truro_2017 <- SoilTemp |> filter(Site != "Montreal", Year == 2017) |> 
+  mutate(Date = as.Date(Date))
+Truro_2018 <- SoilTemp |> filter(Site != "Montreal", Year == 2018)|> 
+  mutate(Date = as.Date(Date))
+Truro_2019 <- SoilTemp |> filter(Site != "Montreal", Year == 2019)|> 
+  mutate(Date = as.Date(Date))
 
-Montreal <- SoilTemp |> filter(Site == "Montreal")
-```
 
-# Montreal
-
-```{r}
-ggplot() +
-  stat_summary(data = Montreal |> filter(Model == "DNDC"), mapping = aes(Date, temp), geom = "line", col = "red") +
-  stat_summary(data = Montreal |> filter(Model == "Obs"), mapping = aes(Date, temp), geom = "point") +
-  facet_wrap(~Year, scales = "free") + theme_base()
+Montreal_2017 <- SoilTemp |> filter(Site == "Montreal", Year == 2017)|> 
+  mutate(Date = as.Date(Date))
+Montreal_2018 <- SoilTemp |> filter(Site == "Montreal", Year == 2018)|> 
+  mutate(Date = as.Date(Date))
+Montreal_2019 <- SoilTemp |> filter(Site == "Montreal", Year == 2019)|> 
+  mutate(Date = as.Date(Date))
 ```
 
 # Truro
 
 ```{r}
-ggplot() +
-  stat_summary(data = Truro |> filter(Model == "DNDC"), mapping = aes(Date, temp), geom = "line", col = "red") +
-  stat_summary(data = Truro |> filter(Model == "Obs"), mapping = aes(Date, temp), geom = "point") +
-  facet_wrap(~Year, scales = "free") +
-  theme_base()
+ST_plt <- function(Data) {
+  ggplot() +
+  geom_line(data = Data |> filter(Model == "DNDC"), mapping = aes(Date, temp, color = "DNDC")) +
+  geom_point(data = Data |> filter(Model == "Obs"), mapping = aes(Date, temp, color = "Obs"), size = 2) +
+  scale_color_manual(breaks=c('DNDC', 'Obs'),
+                     values=c('DNDC'='red4', 'Obs'='blue4')) +
+  scale_x_date(date_breaks = "5 week", date_labels = "%b") + 
+  scale_y_continuous(breaks = seq(-10, 30, 5), limits = c(-10, 30)) +
+  theme_base(base_family = "times")
+}
+
+
+pt1 <- ST_plt(Truro_2017)+
+  labs(x = NULL, y = "Truro", col = NULL) +
+  annotate(geom="text", x=as.Date("2017-11-11"), y=25, 
+             label="d = 0.7")
+
+pt2 <- ST_plt(Truro_2018) +
+  labs(x = NULL, y = NULL, col = NULL)+
+  annotate(geom="text", x=as.Date("2018-11-11"), y=25, 
+             label="d = 0.9")
+
+pt3 <- ST_plt(Truro_2019)+
+  labs(x = NULL, y = NULL, col = NULL)+
+  annotate(geom="text", x=as.Date("2019-11-11"), y=25, 
+             label="d = 0.7")
+
 ```
+
+# Montreal
+
+```{r}
+pm1 <- ST_plt(Montreal_2017) +
+  labs(x = 2017, y = "Montreal", col = NULL)+
+  annotate(geom="text", x=as.Date("2017-11-11"), y=25, 
+             label="d = 0.7")
+
+pm2 <- ST_plt(Montreal_2018)+
+  labs(x = 2018, y = NULL, col = NULL)+
+  annotate(geom="text", x=as.Date("2018-11-11"), y=25, 
+             label="d = 0.7")
+
+pm3 <- ST_plt(Montreal_2019)+
+  labs(x = 2019, y = NULL, col = NULL)+
+  annotate(geom="text", x=as.Date("2019-11-11"), y=25, 
+             label="d = 0.7")
+
+```
+
+## Combined Plots
+```{r}
+y_grob = textGrob("Soil Temperature Content",
+                  gp=gpar(fontface="bold", fontsize=15, family = "times"), rot=90)
+
+grid.arrange(patchworkGrob(((pt1|pt2|pt3)/(pm1|pm2|pm3) + 
+  plot_layout(heights = c(1,1), guides = "collect")) & theme(plot.background = element_blank(),
+                                                             legend.position = "top")),
+  left = y_grob)
+```
+
