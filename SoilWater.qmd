@@ -49,24 +49,33 @@ SW_plt <- function(Data) {
                      values=c('DNDC'='red4', 'Obs'='blue4')) +
   scale_x_date(date_breaks = "5 week", date_labels = "%b") + 
   scale_y_continuous(breaks = seq(0, 40, 5), limits = c(0, 40)) +
-  theme_base(base_family = "times")
+  theme_base(base_family = "times") +
+  theme(legend.text = element_text(face = "bold", size = 20),
+        axis.text = element_text(face = "bold"),
+        axis.title = element_text(face = "bold", size = 20))
 }
 
 
 pt1 <- SW_plt(Truro_2017)+
   labs(x = NULL, y = "Truro", col = NULL) +
   annotate(geom="text", x=as.Date("2017-11-11"), y=32, 
-             label="d = 0.7")
+             label="d = 0.7")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
 
 pt2 <- SW_plt(Truro_2018) +
   labs(x = NULL, y = NULL, col = NULL)+
   annotate(geom="text", x=as.Date("2018-11-11"), y=32, 
-             label="d = 0.9")
+             label="d = 0.9") +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
 
 pt3 <- SW_plt(Truro_2019)+
   labs(x = NULL, y = NULL, col = NULL)+
   annotate(geom="text", x=as.Date("2019-11-11"), y=32, 
-             label="d = 0.7")
+             label="d = 0.7") +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
 
 ```
 
@@ -91,13 +100,13 @@ pm3 <- SW_plt(Montreal_2019)+
 ```
 
 ## Combined Plots
+
 ```{r}
-y_grob = textGrob("Soil Water Content (cm3/cm3)",
-                  gp=gpar(fontface="bold", fontsize=15, family = "times"), rot=90)
+y_grob = textGrob(expression(bold(Soil~Water~Content~(cm^{3}/cm^{3}))),
+                  gp=gpar(fontface="bold", fontsize=15), rot=90)
 
 grid.arrange(patchworkGrob(((pt1|pt2|pt3)/(pm1|pm2|pm3) + 
   plot_layout(heights = c(1,1), guides = "collect")) & theme(plot.background = element_blank(),
                                                              legend.position = "top")),
   left = y_grob)
 ```
-
