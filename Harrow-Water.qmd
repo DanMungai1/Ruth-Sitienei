@@ -46,10 +46,10 @@ IF_2015 <- SWC |> filter(component != "SCM", Year == 2015)|>
 ```{r}
 Harrow_plt <- function(Data) {
   ggplot()+
-  geom_line(data = Data |> filter(Model == "dndc"), mapping = aes(date, Water, col = "dndc")) +
-  geom_point(data = Data |> filter(Model == "obs"), mapping = aes(date, Water, col = "obs")) +
-  scale_color_manual(breaks=c('dndc', 'obs'),
-                     values=c('dndc'='red4', 'obs'='blue4')) +
+  geom_line(data = Data |> filter(Model == "dndc"), mapping = aes(date, Water, col = "DNDC"), linewidth = 1) +
+  geom_point(data = Data |> filter(Model == "obs"), mapping = aes(date, Water, col = "Obs"), size = 2) +
+  scale_color_manual(breaks=c('DNDC', 'Obs'),
+                     values=c('DNDC'='red4', 'Obs'='blue4')) +
   scale_x_date(date_breaks = "6 week", date_labels = "%b")+
   scale_y_continuous(limits = c(0.07, 0.4))+
   theme_base(base_family = "times") +
@@ -61,22 +61,36 @@ Harrow_plt <- function(Data) {
 hp1 <- Harrow_plt(SCM_2012) +
   labs(x = NULL, y = "SCM", col = NULL) +
   theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
+        axis.ticks.x = element_blank()) +
+  annotate(geom="text", x=as.Date("2012-11-11"), y=0.39, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7)
 
 hp2 <- Harrow_plt(SCM_2013) +
   labs(x = NULL, y = NULL, col = NULL) +
   theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())+
+  annotate(geom="text", x=as.Date("2013-11-11"), y=0.39, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7)
 
 hp3 <- Harrow_plt(SCM_2014) +
   labs(x = NULL, y = NULL, col = NULL) +
   theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())+
+  annotate(geom="text", x=as.Date("2014-11-11"), y=0.39, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7)
 
 hp4 <- Harrow_plt(SCM_2015) +
   labs(x = NULL, y = NULL, col = NULL) +
   theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())+
+  annotate(geom="text", x=as.Date("2015-11-11"), y=0.39, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7)
 
 
 ```
@@ -85,16 +99,30 @@ hp4 <- Harrow_plt(SCM_2015) +
 
 ```{r}
 hp01 <- Harrow_plt(IF_2012) +
-  labs(x = 2012, y = "IF", col = NULL)
+  labs(x = 2012, y = "IF", col = NULL) +
+  annotate(geom="text", x=as.Date("2012-11-11"), y=0.39, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7)
 
 hp02 <- Harrow_plt(IF_2013) +
-  labs(x = 2013, y = NULL, col = NULL)
+  labs(x = 2013, y = NULL, col = NULL)+
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())+
+  annotate(geom="text", x=as.Date("2013-11-11"), y=0.39, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7)
 
 hp03 <- Harrow_plt(IF_2014) +
-  labs(x = 2014, y = NULL, col = NULL)
+  labs(x = 2014, y = NULL, col = NULL)+
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())+
+  annotate(geom="text", x=as.Date("2014-11-11"), y=0.39, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7)
 
 hp04 <- Harrow_plt(IF_2015) +
-  labs(x = 2015, y = NULL, col = NULL)
+  labs(x = 2015, y = NULL, col = NULL)+
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())+
+  annotate(geom="text", x=as.Date("2015-11-11"), y=0.39, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7)
 
 ```
 
@@ -108,26 +136,4 @@ grid.arrange(patchworkGrob(((hp1|hp2|hp3|hp4)/(hp01|hp02|hp03|hp04) +
   plot_layout(heights = c(1,1), guides = "collect")) & theme(plot.background = element_blank(),
                                                              legend.position = "top")),
   left = y_grob)
-```
-
-# Temperature
-
-```{r}
-STC <- read_excel("data/temp.xlsx") |>
-  mutate(date = as.Date(date),
-         Year = year(date))
-
-
-ggplot() +
-  geom_line(data = STC |> filter(Model == "dndc"), mapping = aes(date, temp, colour = "dndc")) +
-  geom_point(data = STC |> filter(Model != "dndc"), mapping = aes(date, temp, colour = "obs"), size = 3) +
-  scale_color_manual(breaks=c('dndc', 'obs'),
-                     values=c('dndc'='red4', 'obs'='blue4'))+
-  theme_base(base_family = "times") +
-  theme(legend.position = "top",
-        legend.text = element_text(face = "bold", size = 20),
-        axis.text = element_text(face = "bold", size = 20),
-        axis.title = element_text(face = "bold", size = 20)) +
-  labs(color = NULL, y = expression(bold(Soil~Temperature ^{0}~C)))
-
 ```

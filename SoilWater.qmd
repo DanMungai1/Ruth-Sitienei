@@ -43,7 +43,7 @@ Montreal_2019 <- SoilWater |> filter(Site == "Montreal", Year == 2019)|>
 ```{r}
 SW_plt <- function(Data) {
   ggplot() +
-  geom_line(data = Data |> filter(Model == "DNDC"), mapping = aes(Date, Water, color = "DNDC")) +
+  geom_line(data = Data |> filter(Model == "DNDC"), mapping = aes(Date, Water, color = "DNDC"), linewidth = 1) +
   geom_point(data = Data |> filter(Model == "Obs"), mapping = aes(Date, Water, color = "Obs"), size = 2) +
   scale_color_manual(breaks=c('DNDC', 'Obs'),
                      values=c('DNDC'='red4', 'Obs'='blue4')) +
@@ -58,24 +58,28 @@ SW_plt <- function(Data) {
 
 pt1 <- SW_plt(Truro_2017)+
   labs(x = NULL, y = "Truro", col = NULL) +
-  annotate(geom="text", x=as.Date("2017-11-11"), y=32, 
-             label="d = 0.7")+
+  annotate(geom="text", x=as.Date("2017-11-11"), y=35, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7)+
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank())
 
 pt2 <- SW_plt(Truro_2018) +
   labs(x = NULL, y = NULL, col = NULL)+
-  annotate(geom="text", x=as.Date("2018-11-11"), y=32, 
-             label="d = 0.9") +
+  annotate(geom="text", x=as.Date("2018-11-11"), y=35, 
+             label="d = 0.9", color = "red", fontface = 2, size = 7) +
   theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 pt3 <- SW_plt(Truro_2019)+
   labs(x = NULL, y = NULL, col = NULL)+
-  annotate(geom="text", x=as.Date("2019-11-11"), y=32, 
-             label="d = 0.7") +
+  annotate(geom="text", x=as.Date("2019-11-11"), y=35, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7) +
   theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 ```
 
@@ -84,18 +88,22 @@ pt3 <- SW_plt(Truro_2019)+
 ```{r}
 pm1 <- SW_plt(Montreal_2017) +
   labs(x = 2017, y = "Montreal", col = NULL)+
-  annotate(geom="text", x=as.Date("2017-11-11"), y=32, 
-             label="d = 0.7")
+  annotate(geom="text", x=as.Date("2017-11-11"), y=35, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7)
 
 pm2 <- SW_plt(Montreal_2018)+
   labs(x = 2018, y = NULL, col = NULL)+
-  annotate(geom="text", x=as.Date("2018-11-11"), y=32, 
-             label="d = 0.7")
+  annotate(geom="text", x=as.Date("2018-11-11"), y=35, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7) +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 pm3 <- SW_plt(Montreal_2019)+
   labs(x = 2019, y = NULL, col = NULL)+
-  annotate(geom="text", x=as.Date("2019-11-11"), y=32, 
-             label="d = 0.7")
+  annotate(geom="text", x=as.Date("2019-11-11"), y=35, 
+             label="d = 0.7", color = "red", fontface = 2, size = 7)+
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 ```
 

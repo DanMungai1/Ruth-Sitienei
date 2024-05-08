@@ -1,0 +1,44 @@
+---
+title: "Harrow Temperature"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+execute: 
+  echo: false
+  warning: false
+---
+
+# Temperature
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+library(readxl)
+windowsFonts(times = windowsFont("times new roman"))
+
+STC <- read_excel("data/temp.xlsx") |>
+  mutate(date = as.Date(date),
+         Year = year(date))
+
+
+ggplot() +
+  geom_line(data = STC |> filter(Model == "dndc"), 
+            mapping = aes(date, temp, colour = "DNDC"), linewidth = 0.6) +
+  geom_point(data = STC |> filter(Model != "dndc"), 
+             mapping = aes(date, temp, colour = "Obs"), size = 3) +
+  scale_color_manual(breaks=c('DNDC', 'Obs'),
+                     values=c('DNDC'='red4', 'Obs'='blue4'))+
+  scale_x_date(date_breaks = "8 week", date_labels = "%b") +
+  theme_classic(base_family = "times", base_size = 20) +
+  facet_grid(.~ Year, space = 'free_x', scales = 'free_x', switch = 'x') +
+  theme(text = element_text(face = "bold"),
+        legend.position = "top",
+        legend.text = element_text(face = "bold", size = 20),
+        axis.text = element_text(face = "bold"),
+        axis.title = element_text(face = "bold", size = 20),
+        strip.placement = 'outside',
+        strip.background.x = element_blank()) +
+  labs(color = NULL, y = expression(bold(Soil~Temperature ^{0}~C)), x = NULL)
+
+```
