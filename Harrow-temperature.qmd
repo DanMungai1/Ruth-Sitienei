@@ -20,13 +20,15 @@ windowsFonts(times = windowsFont("times new roman"))
 STC <- read_excel("data/temp.xlsx") |>
   mutate(date = as.Date(date),
          Year = year(date))
-
+dat <- STC |> filter(date == '2015-08-17')
 
 ggplot() +
   geom_line(data = STC |> filter(Model == "dndc"), 
             mapping = aes(date, temp, colour = "DNDC"), linewidth = 0.6) +
   geom_point(data = STC |> filter(Model != "dndc"), 
              mapping = aes(date, temp, colour = "Obs"), size = 3) +
+  geom_text(data=dat, aes(x=date, y= 32, label= "d = 0.7"), 
+            colour="black", size = 7) +
   scale_color_manual(breaks=c('DNDC', 'Obs'),
                      values=c('DNDC'='red4', 'Obs'='blue4'))+
   scale_x_date(date_breaks = "8 week", date_labels = "%b") +
