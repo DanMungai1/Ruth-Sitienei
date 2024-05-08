@@ -41,6 +41,8 @@ ggplot()+
              mapping = aes(date, Water, col = "Obs"), size = 2) +
   geom_text(data=SWCA, aes(x=date, y= y, label= "d = 0.7"), 
             colour="black", size = 7) +
+  scale_color_manual(breaks=c('DNDC', 'Obs'),
+                     values=c('DNDC'='red4', 'Obs'='blue4')) +
   facet_grid(component ~ Year, scales = "free", switch  = "both") +
   scale_x_date(date_breaks = "7 week", date_labels = "%b")+
   scale_y_continuous(limits = c(0.07, 0.4))+
@@ -51,7 +53,7 @@ ggplot()+
         axis.title = element_text(face = "bold", size = 20),
         strip.placement = 'outside',
         strip.background.x = element_blank(),
-        panel.spacing = unit(0,'lines')) +
+        panel.spacing = unit(0,'lines'),
+        strip.text = element_text(face="bold", size=20)) +
   labs(color = NULL, y = y_grob, x = NULL)
 ```
-
