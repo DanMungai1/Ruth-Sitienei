@@ -20,13 +20,6 @@ SWC <- read_excel("data/Harrow SWC.xlsx")|>
   mutate(Year = year(date),
          date = as.Date(date))
 
-SCM <- SWC |> filter(component == "SCM")|> 
-  mutate(Year = year(date),
-         date = as.Date(date))
-IF <- SWC |> filter(component != "SCM")|> 
-  mutate(Year = year(date),
-         date = as.Date(date))
-
 
 SWCA <- SWC |> filter(date == '2015-08-11') |> mutate(y = 0.38)
 ```
@@ -43,7 +36,7 @@ ggplot()+
             colour="black", size = 7) +
   scale_color_manual(breaks=c('DNDC', 'Obs'),
                      values=c('DNDC'='red4', 'Obs'='blue4')) +
-  facet_grid(component ~ Year, scales = "free", switch  = "both") +
+  facet_grid(component ~ Year, scales = "free", switch  = "both", space = "free") +
   scale_x_date(date_breaks = "7 week", date_labels = "%b")+
   scale_y_continuous(limits = c(0.07, 0.4))+
   theme_base(base_family = "times", base_size = 20) +
